@@ -1,0 +1,5 @@
+flask
+flask-sqlalchemy
+pip-tools
+connexion[swagger-ui]
+python-dateutil

@@ -1,0 +1,186 @@
+openapi: 3.0.1
+info:
+  title: Notifications Service API
+  description: Notifications from GoOutSafe with Microservices
+  version: "0.1"
+servers:
+- url: /
+paths:
+  /users/{user_id}/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: Get all of the user's notifications
+      operationId: app.get_user_notifications
+      parameters:
+      - name: user_id
+        in: path
+        description: User's unique identifier
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Return all of the user's notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        404:
+          description: User does not exist
+          content: {}
+    post:
+      tags:
+      - Notifications
+      summary: Creates a new notification for a user
+      operationId: app.new_user_notification
+      parameters:
+      - name: user_id
+        in: path
+        description: User's unique identifier
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+      responses:
+        201:
+          description: Notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        404:
+          description: User not found
+          content: {}
+  /users/{user_id}/notifications/read:
+    get:
+      tags:
+      - Notifications
+      summary: Get the user's read notifications
+      operationId: app.get_user_read_notifications
+      parameters:
+      - name: user_id
+        in: path
+        description: User's unique identifier
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Return the user's read notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        404:
+          description: User not found
+          content: {}
+  /users/{user_id}/notifications/unread:
+    get:
+      tags:
+      - Notifications
+      summary: Get the user's unread notifications
+      operationId: app.get_user_unread_notifications
+      parameters:
+      - name: user_id
+        in: path
+        description: User's unique identifier
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Return the user's unread notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        404:
+          description: User does not exist
+          content: {}
+  /notifications/{notification_id}:
+    get:
+      tags:
+      - Notifications
+      summary: Get a single notification
+      operationId: app.get_notification
+      parameters:
+      - name: notification_id
+        in: path
+        description: Notification's unique identifier
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Return notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        404:
+          description: Notification does not exist
+          content: {}
+    patch:
+      tags:
+      - Notifications
+      summary: Edit a notification
+      operationId: app.edit_notification
+      parameters:
+      - name: notification_id
+        in: path
+        description: Notification's unique identifier
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+      responses:
+        200:
+          description: Notification edited successfully
+          content: {}
+        404:
+          description: Notification does not exist
+          content: {}
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Resource location
+          example: "/notifications/123"
+        user_id:
+          type: integer
+          description: Recipient's id
+          example: 345
+        sent_on:
+          type: string
+          format: date-time
+          description: When the notification was sent
+          example: "2020-11-10T10:30:00+1:00"
+        content:
+          type: string
+          description: Notification's contents
+          example: "Your order at restaurant 'Foobar' has been canceled"
+        read_on:
+          type: string
+          format: date-time
+          description: If present, describes the time when the notification has been read by the recipient
+          example: "2020-11-10T10:30:00+1:00"
+       
+  
