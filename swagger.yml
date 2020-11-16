@@ -6,43 +6,39 @@ info:
 servers:
 - url: /
 paths:
-  /users/{user_id}/notifications:
+  /notifications:
     get:
       tags:
       - Notifications
-      summary: Get all of the user's notifications
-      operationId: app.get_user_notifications
+      summary: Performs a search on notifications
+      operationId: app.get_notifications
       parameters:
       - name: user_id
-        in: path
+        in: query
         description: User's unique identifier
-        required: true
+        required: false
         schema:
           type: integer
+      - name: read
+        in: query
+        description: Whether to retrieve only read notifications or unread
+        required: false
+        schema:
+          type: boolean
       responses:
         200:
-          description: Return all of the user's notifications
+          description: Return all notifications that match parameters
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Notification'
-        404:
-          description: User does not exist
-          content: {}
     post:
       tags:
       - Notifications
       summary: Creates a new notification for a user
-      operationId: app.new_user_notification
-      parameters:
-      - name: user_id
-        in: path
-        description: User's unique identifier
-        required: true
-        schema:
-          type: integer
+      operationId: app.new_notification
       requestBody:
         content:
           application/json:
@@ -55,59 +51,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notification'
-        404:
-          description: User not found
+        400:
+          description: Invalid parameters
           content: {}
-  /users/{user_id}/notifications/read:
-    get:
-      tags:
-      - Notifications
-      summary: Get the user's read notifications
-      operationId: app.get_user_read_notifications
-      parameters:
-      - name: user_id
-        in: path
-        description: User's unique identifier
-        required: true
-        schema:
-          type: integer
-      responses:
-        200:
-          description: Return the user's read notifications
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Notification'
-        404:
-          description: User not found
-          content: {}
-  /users/{user_id}/notifications/unread:
-    get:
-      tags:
-      - Notifications
-      summary: Get the user's unread notifications
-      operationId: app.get_user_unread_notifications
-      parameters:
-      - name: user_id
-        in: path
-        description: User's unique identifier
-        required: true
-        schema:
-          type: integer
-      responses:
-        200:
-          description: Return the user's unread notifications
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Notification'
-        404:
-          description: User does not exist
-          content: {}
+
   /notifications/{notification_id}:
     get:
       tags:
@@ -152,6 +99,9 @@ paths:
         200:
           description: Notification edited successfully
           content: {}
+        400:
+          description: Invalid sent_on value
+          content: {}
         404:
           description: Notification does not exist
           content: {}
@@ -172,6 +122,7 @@ components:
           type: string
           format: date-time
           description: When the notification was sent
+          readOnly: true
           example: "2020-11-10T10:30:00+1:00"
         content:
           type: string

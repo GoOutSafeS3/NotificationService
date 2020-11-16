@@ -6,40 +6,33 @@ from dateutil import parser
 
 db_session = None
 
-def get_user_notifications(user_id):
-    """ Returns all of a user's notifications """
-    q = db_session.query(Notification).\
-        filter(Notification.user_id == user_id).\
-        all()
+def get_notifications(**kwargs):
+    """ Returns notifications matching parameters """
+    q = db_session.query(Notification)
+
+    if 'read' in kwargs:
+        if kwargs['read']:
+            q = q.filter(Notification.read_on.isnot(None))
+        else:
+            q = q.filter(Notification.read_on.is_(None))
+    
+    if 'user_id' in kwargs:
+        q = q.filter(Notification.user_id == kwargs['user_id'])
+    
+    q = q.all()
     return [p.serialize() for p in q]
 
-def new_user_notification(user_id, body):
+def new_notification(body):
     """ Sends a new notification to a user """
     noti = Notification()
-    noti.user_id = user_id
-    noti.sent_on = datetime.datetime.now()
+    noti.user_id = body['user_id']
+    noti.sent_on = parser.isoparse(body['sent_on'])
     noti.content = body['content']
     
     db_session.add(noti)
     db_session.commit()
 
     return noti.serialize()
-
-def get_user_read_notifications(user_id):
-    """ Returns a user's read notifications """
-    q = db_session.query(Notification).\
-        filter(Notification.user_id == user_id).\
-        filter(Notification.read_on.isnot(None)).\
-        all()
-    return [p.serialize() for p in q]
-
-def get_user_unread_notifications(user_id):
-    """ Returns a user's unread notifications """
-    q = db_session.query(Notification).\
-        filter(Notification.user_id == user_id).\
-        filter(Notification.read_on.is_(None)).\
-        all()
-    return [p.serialize() for p in q]
 
 def get_notification(notification_id):
     """ Returns a single notification
