@@ -114,6 +114,7 @@ components:
           type: string
           description: Resource location
           example: "/notifications/123"
+          readOnly: true
         user_id:
           type: integer
           description: Recipient's id
@@ -122,7 +123,6 @@ components:
           type: string
           format: date-time
           description: When the notification was sent
-          readOnly: true
           example: "2020-11-10T10:30:00+1:00"
         content:
           type: string

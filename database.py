@@ -1,10 +1,11 @@
-from sqlalchemy import create_engine, Column, Integer, Text, DateTime
+from sqlalchemy import Column, Integer, Text, DateTime
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy import SQLAlchemy
 
-db = declarative_base()
+db = SQLAlchemy()
 
-class Notification(db):
+class Notification(db.Model):
     __tablename__ = 'notification'
 
     # Unique id
@@ -30,12 +31,3 @@ class Notification(db):
             "sent_on": self.sent_on,
             "read_on": self.read_on
         }
-
-def init_db(uri):
-    engine = create_engine(uri, convert_unicode=True)
-    db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False,
-                                             bind=engine))
-    db.query = db_session.query_property()
-    db.metadata.create_all(bind=engine)
-
-    return db_session
