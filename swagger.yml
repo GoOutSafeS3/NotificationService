@@ -43,7 +43,8 @@ paths:
         content:
           application/json:
               schema:
-                $ref: '#/components/schemas/Notification'
+                $ref: '#/components/schemas/NewNotification'
+
       responses:
         201:
           description: Notification created successfully
@@ -53,7 +54,11 @@ paths:
                 $ref: '#/components/schemas/Notification'
         400:
           description: Invalid parameters
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 
   /notifications/{notification_id}:
     get:
@@ -94,11 +99,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Notification'
+              $ref: '#/components/schemas/EditNotification'
       responses:
         200:
           description: Notification edited successfully
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EditNotification'
         400:
           description: Invalid sent_on value
           content: {}
@@ -107,7 +115,15 @@ paths:
           content: {}
 components:
   schemas:
-    Notification:
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          readOnly: true
+    NotificationBase:
       type: object
       properties:
         url:
@@ -115,23 +131,65 @@ components:
           description: Resource location
           example: "/notifications/123"
           readOnly: true
-        user_id:
-          type: integer
-          description: Recipient's id
-          example: 345
-        sent_on:
-          type: string
-          format: date-time
-          description: When the notification was sent
-          example: "2020-11-10T10:30:00+1:00"
-        content:
-          type: string
-          description: Notification's contents
-          example: "Your order at restaurant 'Foobar' has been canceled"
-        read_on:
-          type: string
-          format: date-time
-          description: If present, describes the time when the notification has been read by the recipient
-          example: "2020-11-10T10:30:00+1:00"
-       
-  
+    NewNotification:
+      allOf:
+        - $ref: '#/components/schemas/NotificationBase'
+        - type: object
+          required:
+          - user_id
+          - sent_on
+          - content
+          properties:
+            user_id:
+              type: integer
+              description: Recipient's id
+              example: 345
+            sent_on:
+              type: string
+              format: date-time
+              description: When the notification was sent
+              example: "2020-11-16T20:08:39.128358"
+            content:
+              type: string
+              description: Notification's contents
+              example: "Your order at restaurant 'Foobar' has been canceled"
+            read_on:
+              type: string
+              format: date-time
+              description: If present, describes the time when the notification has been read by the recipient
+              example: "2020-11-16T20:08:39.128358"
+    EditNotification:
+      allOf:
+        - $ref: '#/components/schemas/NotificationBase'
+        - type: object
+          required:
+          - read_on
+          properties:
+            read_on:
+              type: string
+              format: date-time
+              description: If present, describes the time when the notification has been read by the recipient
+              example: "2020-11-16T20:08:39.128358"
+    Notification:
+      allOf:
+        - $ref: '#/components/schemas/NotificationBase'
+        - type: object
+          properties:
+            user_id:
+              type: integer
+              description: Recipient's id
+              example: 345
+            sent_on:
+              type: string
+              format: date-time
+              description: When the notification was sent
+              example: "2020-11-16T20:08:39.128358"
+            content:
+              type: string
+              description: Notification's contents
+              example: "Your order at restaurant 'Foobar' has been canceled"
+            read_on:
+              type: string
+              format: date-time
+              description: If present, describes the time when the notification has been read by the recipient
+              example: "2020-11-16T20:08:39.128358"
