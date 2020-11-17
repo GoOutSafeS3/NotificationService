@@ -4,6 +4,14 @@ from flask import jsonify
 import datetime
 from dateutil import parser
 
+def make_error(detail):
+    return {
+        "type": "about:blank",
+        "title": "Bad Request",
+        "status": 400,
+        "detail": detail
+    }
+
 def get_notifications(**kwargs):
     """ Returns notifications matching parameters """
     q = db.session.query(Notification)
@@ -29,22 +37,22 @@ def new_notification(body):
         sent_on = parser.isoparse(body['sent_on'])
 
         if sent_on > datetime.datetime.now():
-            return {"error": "Invalid sent_on date"}, 400
+            return make_error("Invalid sent_on date"), 400
 
         noti.sent_on = parser.isoparse(body['sent_on'])
     except ValueError:
-        return {"error": "Invalid sent_on date"}, 400
+        return make_error("Invalid sent_on date"), 400
     
     if 'read_on' in body:
         try:
             read_on = parser.isoparse(body['read_on'])
 
             if read_on > datetime.datetime.now() or read_on < noti.sent_on:
-                return {"error": "Invalid read_on date"}, 400
+                return make_error("Invalid read_on date"), 400
 
             noti.read_on = read_on
         except ValueError:
-            return {"error": "Invalid read_on date"}, 400
+            return make_error("Invalid read_on date"), 400
 
     noti.content = body['content']
     
@@ -81,15 +89,15 @@ def edit_notification(notification_id, body):
         return None, 404
     else:
         if q.read_on is not None:
-            return {"error": "Cannot modify already present read_on date"}, 400
+            return make_error("Cannot modify already present read_on date"), 400
 
         try:
             read_on = parser.isoparse(body['read_on'])
         except ValueError:
-            return {"error": "Invalid read_on date"}, 400
+            return make_error("Invalid read_on date"), 400
 
         if read_on < q.sent_on or read_on > datetime.datetime.now():
-            return {"error": "Invalid read_on date"}, 400
+            return make_error("Invalid read_on date"), 400
         
         q.read_on = read_on
         

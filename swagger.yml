@@ -117,12 +117,23 @@ components:
   schemas:
     Error:
       type: object
-      required:
-      - error
       properties:
-        error:
+        type:
           type: string
-          readOnly: true
+          description: Error type
+          example: about:blank
+        title:
+          type: string
+          description: Error name
+          example: Bad Request
+        status:
+          type: integer
+          description: Error status code
+          example: about:blank
+        detail:
+          type: string
+          description: Error description
+          example: None is not of type 'string'
     NotificationBase:
       type: object
       properties:
