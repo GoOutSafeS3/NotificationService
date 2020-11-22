@@ -122,7 +122,7 @@ def create_app(db_path):
 
     return app
 
-if __name__ == '__main__':
+if __name__ == '__main__': #pragma: no cover
     app = create_app('sqlite:///notification.db')
 
     with app.app.app_context():
